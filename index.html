@@ -1,10 +1,114 @@
-<!DOCTYPE html>
-<html>
-<head>
+  <!doctype html>
+  <html>
+    <head>
   <link rel="stylesheet" href="https://cdn.rawgit.com/sourcelair/xterm.js/2.1.0/dist/xterm.css">
-</head>
-<body>
-<script src="https://unpkg.com/github-api/dist/GitHub.bundle.min.js"></script>
 <script src="https://cdn.rawgit.com/sourcelair/xterm.js/2.1.0/dist/xterm.js"></script>
-</body>
-</html>
+      <script src="https://cdn.rawgit.com/euank/snailescape.js/master/lib/parser.js"></script>
+      <script src="https://unpkg.com/browserfs@1.1.0"></script>
+      <script src="https://unpkg.com/github-api/dist/GitHub.bundle.min.js"></script>
+      <script src="ansi.js"></script>
+    </head>
+    <body>
+      <div id="terminal"></div>
+      <script>
+      	var term = new Terminal();
+        term.open(document.getElementById('#terminal'));
+  		var shellprompt = '$ ';
+        var curline = '';
+        var commands = {};
+        var cwd = '/';
+        
+        function c(color, str){
+          return ansi.color(color) + str + ansi.color('reset');
+        }
+        var colors = ["white", "black", "blue", "cyan", "green", "magenta", "red", "yellow", "bgWhite", "bgBlack", "bgBlue", "bgCyan", "bgGreen", "bgMagenta", "bgRed", "bgYellow", "grey", "brightBlack", "brightRed", "brightGreen", "brightYellow", "brightBlue", "brightMagenta", "brightCyan", "brightWhite", "bgGrey", "bgBrightBlack", "bgBrightRed", "bgBrightGreen", "bgBrightYellow", "bgBrightBlue", "bgBrightMagenta", "bgBrightCyan", "bgBrightWhite"];
+        var color = {};
+        
+        colors.forEach(function (col) {
+          color[col] = c.bind(null, col);
+        });
+
+  		term.prompt = function () {
+    		term.write('\r\n' + color.green('guest') + '@' + color.yellow(cwd)+ ' $  ');
+  		};
+        term.writeln('Welcome to xterm.js');
+  		term.writeln('This is a local terminal emulation, without a real terminal in the back-end.');
+  		term.writeln('Type some keys and commands to play around.');
+  		term.writeln('');
+  		term.prompt();
+
+  		term.on('key', function (key, ev) {
+    		var printable = (
+    		  !ev.altKey && !ev.altGraphKey && !ev.ctrlKey && !ev.metaKey
+    		);
+
+    		if (ev.keyCode == 13) {
+  				term.writeln('');
+              	var parser = new SnailEscape();
+				var result = parser.parse(curline);
+                console.log(curline);
+				if(result.error) {
+  					term.write(ansi.color('red') + "Could not parse input" + ansi.color('reset') + ": ", result.error);
+				} else {
+ 					var cmd = result.parts.shift();
+                  	function handle(err, res) {
+                          if (err) {
+                            term.write(ansi.color('red') + "Error" + ansi.color('reset') + ": " + err.message || err);
+                          } else {
+                            term.write(res);
+                          }
+                    }
+                  	if (!commands[cmd]) {
+                      term.write(ansi.color('red') + "Command not recognized" + ansi.color('reset') + ": " + cmd);
+                    } else {
+                      if (commands[cmd].async) {
+                        commands[cmd](result.parts, handle);
+                      } else {
+                        var err, res;
+                        try {res = commands[cmd](result.parts);} catch(e){err = e}
+                        handle(err, res);
+                      }
+                    }
+				}
+                curline = '';
+    		 	term.prompt();
+    		} else if (ev.keyCode == 8) {
+    		  if (term.x > 2) {
+                curline = curline.slice(0, -1);
+    		    term.write('\b \b');
+    		  }
+    		} else if (printable) {
+    		  term.write(key);
+              curline += key;
+    		}
+  		});
+
+  		term.on('paste', function (data, ev) {
+  		  term.write(data);
+  		});
+        var fs = (function(){
+        var obj = {};
+  		BrowserFS.install(obj);
+  		// Constructs an instance of the LocalStorage-backed file system. 
+  		var lsfs = new BrowserFS.FileSystem.LocalStorage();
+  		// Initialize it as the root file system. 
+ 		BrowserFS.initialize(lsfs);
+        return obj.require('fs');
+        })();
+        commands.ls = function(args, cb){
+          fs.readdir(cwd,function(err, res){
+            cb(err, res && res.join('\r\n'));
+          });
+        };
+        commands.ls.async = true;
+        commands.pwd = function(){return cwd;}
+        commands.echo = function(args){return args.join('\r\n');}
+        commands.cat = function (args, cb) {
+          fs.readFile(cwd + args[0], 'utf-8', function (err, res) {
+            cb(err, res);
+          });
+        }
+        commands.cat.async = true;
+      </script>
+    </body>
+  </html>
