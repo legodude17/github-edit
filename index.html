@@ -73,7 +73,7 @@
                 curline = '';
     		 	term.prompt();
     		} else if (ev.keyCode == 8) {
-    		  if (term.x > 2) {
+    		  if (term.x > 11) {
                 curline = curline.slice(0, -1);
     		    term.write('\b \b');
     		  }
