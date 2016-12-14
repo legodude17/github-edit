@@ -14,6 +14,7 @@
         term.open(document.getElementById('#terminal'));
   		var shellprompt = '$ ';
         var curline = '';
+        var commands = {};
 
   		term.prompt = function () {
     		term.write('\r\n$ ');
@@ -37,8 +38,25 @@
 				if(result.error) {
   					term.write(ansi.color('red') + "Could not parse input" + ansi.color('reset') + ": ", result.error);
 				} else {
- 					term.write("All done! You typed the below array (as json): ")
-  					term.write(JSON.stringify(result.parts));
+ 					var cmd = result.parts.shift();
+                  	function handle(err, res) {
+                          if (err) {
+                            term.write(ansi.color('red') + "Error" + ansi.color('reset') + ": " + err.message || err);
+                          } else {
+                            term.write(res);
+                          }
+                    }
+                  	if (!commands[cmd]) {
+                      term.write(ansi.color('red') + "Command not recognized" + ansi.color('reset') + ": " + cmd);
+                    } else {
+                      if (commands[cmd].async) {
+                        commands[cmd](result.parts, handle);
+                      } else {
+                        var err, res;
+                        try {res = commands[cmd](result.parts);} catch(e){err = e}
+                        handle(err, res);
+                      }
+                    }
 				}
                 curline = '';
     		 	term.prompt();
