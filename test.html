@@ -31,7 +31,7 @@
               	var parser = new SnailEscape();
 				var result = parser.parse("echo hello world");
 				if(result.error) {
-  					term.write(("\033[1;3;31could not parse input\033[0m: ", result.error);
+  					term.write("\033[1;3;31could not parse input\033[0m: ", result.error);
 				} else {
  					term.write("All done! You typed the below array (as json): ")
   					term.write(JSON.stringify(result.parts));
