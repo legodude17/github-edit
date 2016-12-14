@@ -14,7 +14,7 @@ function getToken() {
 }
 function request(url, method, headers, body, respType) {
   var xml = new XMLHttpRequest();
-  return new Promse(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
     xml.open(method.toUpperCase(), url);
     if (headers) {
       for (var i in headers) {
