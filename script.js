@@ -14,17 +14,17 @@ function getToken() {
 }
 function request(url, method, headers, body, respType) {
   var xml = new XMLHttpRequest();
-  if (headers) {
-    for (var i in headers) {
-      var v = headers[i];
-      xml.setRequestHeader(i, v);
-    }
-  }
-  if (respType) {
-    xml.responseType = respType;
-  }
   return new Promse(function (resolve, reject) {
     xml.open(method.toUpperCase(), url);
+    if (headers) {
+      for (var i in headers) {
+        var v = headers[i];
+        xml.setRequestHeader(i, v);
+      }
+    }
+    if (respType) {
+      xml.responseType = respType;
+    }
     xml.send(body);
     xml.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
