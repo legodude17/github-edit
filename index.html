@@ -114,10 +114,8 @@
           	if (!file) {
               file = '/';
             }
-        	fs.exists(file, function (err, res) {
-              if (err) {
-                cb(err);
-              } else if (!res) {
+        	fs.exists(file, function (res) {
+              if (!res) {
                 cb(new Error('ENOTENT: No such file or directory, ' + file));
               } else {
                 cwd = file;
