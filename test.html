@@ -83,6 +83,20 @@
  		BrowserFS.initialize(lsfs);
         return obj.require('fs');
         })();
+        commands.ls = function(args, cb){
+          fs.readdir(commands.pwd(),function(err, res){
+            cb(err, res && res.join('\r\n'));
+          });
+        };
+        commands.ls.async = true;
+        commands.pwd = function(){return '/';}
+        commands.echo = function(args){return args.join('\r\n');}
+        commands.cat = function (args, cb) {
+          fs.readFile(commands.pwd() + args[0], function (err, res) {
+            cb(err, res);
+          });
+        }
+        commands.cat.async = true;
       </script>
     </body>
   </html>
