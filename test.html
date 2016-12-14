@@ -15,6 +15,7 @@
   		var shellprompt = '$ ';
         var curline = '';
         var commands = {};
+        var cwd = '/';
         
         function c(color, str){
           return ansi.color(color) + str + ansi.color('reset');
@@ -27,7 +28,7 @@
         });
 
   		term.prompt = function () {
-    		term.write('\r\n$ ');
+    		term.write('\r\n' + color.green('guest') + '@' + color.yellow(cwd)+ ' $  ');
   		};
         term.writeln('Welcome to xterm.js');
   		term.writeln('This is a local terminal emulation, without a real terminal in the back-end.');
@@ -94,15 +95,15 @@
         return obj.require('fs');
         })();
         commands.ls = function(args, cb){
-          fs.readdir(commands.pwd(),function(err, res){
+          fs.readdir(cwd,function(err, res){
             cb(err, res && res.join('\r\n'));
           });
         };
         commands.ls.async = true;
-        commands.pwd = function(){return '/';}
+        commands.pwd = function(){return cwd;}
         commands.echo = function(args){return args.join('\r\n');}
         commands.cat = function (args, cb) {
-          fs.readFile(commands.pwd() + args[0], 'utf-8', function (err, res) {
+          fs.readFile(cwd + args[0], 'utf-8', function (err, res) {
             cb(err, res);
           });
         }
