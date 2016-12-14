@@ -4,6 +4,7 @@
   <link rel="stylesheet" href="https://cdn.rawgit.com/sourcelair/xterm.js/2.1.0/dist/xterm.css">
 <script src="https://cdn.rawgit.com/sourcelair/xterm.js/2.1.0/dist/xterm.js"></script>
       <script src="https://cdn.rawgit.com/euank/snailescape.js/master/lib/parser.js"></script>
+      <script src="https://unpkg.com/browserfs@1.1.0"></script>
       <script src="ansi.js"></script>
     </head>
     <body>
@@ -55,6 +56,15 @@
   		term.on('paste', function (data, ev) {
   		  term.write(data);
   		});
+        var fs = (function(){
+        var obj = {};
+  		BrowserFS.install(window);
+  		// Constructs an instance of the LocalStorage-backed file system. 
+  		var lsfs = new BrowserFS.FileSystem.LocalStorage();
+  		// Initialize it as the root file system. 
+ 		BrowserFS.initialize(lsfs);
+        return obj.require('fs');
+        })();
       </script>
     </body>
   </html>
