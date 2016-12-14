@@ -92,7 +92,7 @@
         commands.pwd = function(){return '/';}
         commands.echo = function(args){return args.join('\r\n');}
         commands.cat = function (args, cb) {
-          fs.readFile(commands.pwd() + args[0], function (err, res) {
+          fs.readFile(commands.pwd() + args[0], 'utf-8', function (err, res) {
             cb(err, res);
           });
         }
