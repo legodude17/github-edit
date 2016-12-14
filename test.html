@@ -17,7 +17,23 @@
           term.cursorHidden=false;
           term.write('guest@\033[1;3;31m/\033[0m $ ');
         }
-        term.on('keydown', function(e) {console.log(e)});
+        term.on('keydown', function(e) {
+          var prevent = false;
+          switch (e.key) {
+            case 'Enter':
+              nextLine();
+              prevent = true;
+              break;
+            case 'Backspace':
+              term.deleteChar([1]);
+              prevent = true;
+              break;
+          }
+          if (prevent) {
+            e.preventDefault();
+            e.preventPropagation();
+          }
+        });
         term.on('key', function(e){term.write(e)});
       </script>
     </body>
