@@ -58,7 +58,7 @@
   		});
         var fs = (function(){
         var obj = {};
-  		BrowserFS.install(window);
+  		BrowserFS.install(obj);
   		// Constructs an instance of the LocalStorage-backed file system. 
   		var lsfs = new BrowserFS.FileSystem.LocalStorage();
   		// Initialize it as the root file system. 
