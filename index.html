@@ -109,6 +109,23 @@
           });
         }
         commands.cat.async = true;
+        commands.cd = function(args, cb){
+          	var file = (args[0] === '..' ? file = cwd.split('/').slice(0,-1).join('/') : cwd + args[0]);
+          	if (!file) {
+              file = '/';
+            }
+        	fs.exists(file, function (err, res) {
+              if (err) {
+                cb(err);
+              } else if (!res) {
+                cb(new Error('ENOTENT: No such file or directory, ' + file));
+              } else {
+                cwd = file;
+                cb(null, '');
+              }
+            });
+        }
+        commands.cd.async = true;      
       </script>
     </body>
   </html>
