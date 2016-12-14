@@ -10,6 +10,7 @@
       	var term = new Terminal();
         term.open(document.getElementById('#terminal'));
         term.write('Hello from \033[1;3;31mxterm.js\033[0m $ ')
+        term.on('key', function(e){e === '\n' ? term.writeln('newline') : term.write(e);})
       </script>
     </body>
   </html>
