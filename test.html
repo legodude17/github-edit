@@ -31,12 +31,14 @@
   				term.writeln('');
               	var parser = new SnailEscape();
 				var result = parser.parse(curline);
+                console.log(curline);
 				if(result.error) {
   					term.write("\033[1;3;31cCould not parse input\033[0m: ", result.error);
 				} else {
  					term.write("All done! You typed the below array (as json): ")
   					term.write(JSON.stringify(result.parts));
 				}
+                curline = '';
     		 	term.prompt();
     		} else if (ev.keyCode == 8) {
     		  if (term.x > 2) {
