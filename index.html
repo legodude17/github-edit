@@ -119,6 +119,9 @@
                 cb(new Error('ENOTENT: No such file or directory, ' + file));
               } else {
                 cwd = file;
+                if (!cwd.endsWith('/')) {
+                  cwd += '/';
+                }
                 cb(null, '');
               }
             });
