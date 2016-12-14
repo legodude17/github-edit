@@ -15,6 +15,16 @@
   		var shellprompt = '$ ';
         var curline = '';
         var commands = {};
+        
+        function c(color, str){
+          return ansi.color(color) + str + ansi.color('reset');
+        }
+        var colors = ["white", "black", "blue", "cyan", "green", "magenta", "red", "yellow", "bgWhite", "bgBlack", "bgBlue", "bgCyan", "bgGreen", "bgMagenta", "bgRed", "bgYellow", "grey", "brightBlack", "brightRed", "brightGreen", "brightYellow", "brightBlue", "brightMagenta", "brightCyan", "brightWhite", "bgGrey", "bgBrightBlack", "bgBrightRed", "bgBrightGreen", "bgBrightYellow", "bgBrightBlue", "bgBrightMagenta", "bgBrightCyan", "bgBrightWhite"];
+        var color = {};
+        
+        colors.forEach(function (col) {
+          color[col] = c.bind(null, col);
+        });
 
   		term.prompt = function () {
     		term.write('\r\n$ ');
