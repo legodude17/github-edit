@@ -1,4 +1,4 @@
-function github(path, method='GET', headers={}, body=null, json=true) {
+function github(path, method='GET', headers={}, body=null, respType='json') {
   var token = sessionStorage.getItem('token');
   if (!token) {
     token = getToken();
@@ -7,12 +7,12 @@ function github(path, method='GET', headers={}, body=null, json=true) {
   return request('https://api.github.com/' + path, method, Object.assign(headers, {
     'Accept': 'application/vnd.github.v3+json',
     'authorization':'token ' + token
-  }), body, json);
+  }), body, respType);
 }
 function getToken() {
   return prompt('Please enter your github token');
 }
-function request(url, method, headers, body, json) {
+function request(url, method, headers, body, respType) {
   var xml = new XMLHttpRequest();
   if (headers) {
     for (var i in headers) {
@@ -20,8 +20,9 @@ function request(url, method, headers, body, json) {
       xml.setRequestHeader(i, v);
     }
   }
-  if (json) {
-    xml
+  if (respType) {
+    xml.responseType = respType;
+  }
   return new Promse(function (resolve, reject) {
     xml.open(method.toUpperCase(), url);
     xml.send(body);
