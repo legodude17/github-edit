@@ -10,32 +10,42 @@
       	var term = new Terminal();
         term.open(document.getElementById('#terminal'));
         term.write('Hello from \033[1;3;31mxterm.js\033[0m $ ')
-        /*function nextLine() {
-          term.cursorHidden=true;
-          term.cursorNextLine([0]);
-          term.cursorHidden=false;
-          term.write('guest@\033[1;3;31m/\033[0m $ ');
-          term.cursorForward([13]);
-        }
-        term.on('keydown', function(e) {
-          var prevent = false;
-          switch (e.key) {
-            case 'Enter':
-              nextLine();
-              prevent = true;
-              break;
-            case 'Backspace':
-              term.deleteChars([1]);
-              prevent = true;
-              break;
-          }
-          if (prevent) {
-            e.preventDefault();
-            //e.preventPropagation();
-          }
-        });*/
-        term.send = console.log.bind(console, 'term sent:');
-        term.on('key', function(e){term.write(e)});
+        if (term._initialized) {
+    		return;
+  		}
+
+  		term._initialized = true;
+
+  		var shellprompt = '$ ';
+
+  		term.prompt = function () {
+    		term.write('\r\n' + shellprompt);
+  		};
+        term.writeln('Welcome to xterm.js');
+  		term.writeln('This is a local terminal emulation, without a real terminal in the back-end.');
+  		term.writeln('Type some keys and commands to play around.');
+  		term.writeln('');
+  		term.prompt();
+
+  		term.on('key', function (key, ev) {
+    		var printable = (
+    		  !ev.altKey && !ev.altGraphKey && !ev.ctrlKey && !ev.metaKey
+    		);
+
+    		if (ev.keyCode == 13) {
+    		  term.prompt();
+    		} else if (ev.keyCode == 8) {
+    		  if (term.x > 2) {
+    		    term.write('\b \b');
+    		  }
+    		} else if (printable) {
+    		  term.write(key);
+    		}
+  		});
+
+  		term.on('paste', function (data, ev) {
+  		  term.write(data);
+  		});
       </script>
     </body>
   </html>
