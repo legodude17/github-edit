@@ -1,16 +1,21 @@
 function github(path, method='GET', headers={}, body=null, respType='json') {
   var token = sessionStorage.getItem('token');
+  var user = localStorage.getItem('github-username');
   if (!token) {
-    token = getToken();
+    {token} = getData();
+  }
+  if (!user) {
+    {user} = getData();
   }
   sessionStorage.setItem('token', token);
+  localStorage.setItem('github-username', user)
   return request('https://api.github.com/' + path, method, Object.assign(headers, {
     'Accept': 'application/vnd.github.v3+json',
-    'authorization':'token ' + token
+    'Authorization': user + ':' + token
   }), body, respType);
 }
-function getToken() {
-  return prompt('Please enter your github token');
+function getData() {
+  return {token: prompt('Please enter your github token'), user: prompt('Please enter you username')};
 }
 function request(url, method, headers, body, respType) {
   var xml = new XMLHttpRequest();
