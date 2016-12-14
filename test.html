@@ -13,6 +13,7 @@
         function nextLine() {
           term.cursorHidden=true;
           term.cursorNextLine([0]);
+          term.cursorForward([13]);
           term.cursorHidden=false;
           term.write('guest@\033[1;3;31m/\033[0m $ ');
         }
