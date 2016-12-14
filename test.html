@@ -11,6 +11,7 @@
       	var term = new Terminal();
         term.open(document.getElementById('#terminal'));
   		var shellprompt = '$ ';
+        var curline = '';
 
   		term.prompt = function () {
     		term.write('\r\n' + shellprompt);
@@ -29,7 +30,7 @@
     		if (ev.keyCode == 13) {
   				term.writeln('');
               	var parser = new SnailEscape();
-				var result = parser.parse("echo hello world");
+				var result = parser.parse();
 				if(result.error) {
   					term.write("\033[1;3;31could not parse input\033[0m: ", result.error);
 				} else {
@@ -39,10 +40,12 @@
     		 	term.prompt();
     		} else if (ev.keyCode == 8) {
     		  if (term.x > 2) {
+                curline = curline.slice(0, -1);
     		    term.write('\b \b');
     		  }
     		} else if (printable) {
     		  term.write(key);
+              curline += key;
     		}
   		});
 
