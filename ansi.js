@@ -122,4 +122,4 @@ function colorNameToCode (color) {
   throw new Error('Unknown color or style name: ' + color)
 }
 window.ansi = exports;
-})
+})()
