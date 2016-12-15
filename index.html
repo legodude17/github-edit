@@ -70,6 +70,7 @@
                   if (currentCmd.enter) {
                     currentCmd.enter(curline);
                   }
+                  curline = '';
                   return;
                 }
               	var parser = new SnailEscape();
@@ -83,6 +84,7 @@
                   	runCmd(cmd, result.parts, finish);
 				}
               	function finish() {
+                  curline = '';
                   term.writeln('');
                   term.prompt();
                 }
