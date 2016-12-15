@@ -41,10 +41,10 @@
                       term.write(ansi.color('red') + "Command not recognized" + ansi.color('reset') + ": " + cmd);
                     } else {
                       if (commands[cmd].async) {
-                        commands[cmd](result.parts, handle);
+                        commands[cmd](args, handle);
                       } else {
                         var err, res;
-                        try {res = commands[cmd](result.parts);} catch(e){err = e}
+                        try {res = commands[cmd](args);} catch(e){err = e}
                         handle(err, res);
                       }
                     }
