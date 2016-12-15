@@ -125,7 +125,15 @@
               }
             });
         }
-        commands.cd.async = true;      
+        commands.cd.async = true;     
+        commands.mkdir = function(args, cb) {
+          fs.mkdir(cwd + args[0], cb);
+        }
+        commands.mkdir.async = true;
+        commands.rt = function(args, cb) {
+          fs.writeFile(args[0], args[1], cb);
+        }
+        commands.async = true;
       </script>
     </body>
   </html>
