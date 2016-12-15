@@ -76,6 +76,7 @@
               	var parser = new SnailEscape();
 				var result = parser.parse(curline);
                 console.log(curline);
+                curline = '';
 				if(result.error) {
   					term.write(ansi.color('red') + "Could not parse input" + ansi.color('reset') + ": ", result.error);
                   finish();
@@ -84,7 +85,6 @@
                   	runCmd(cmd, result.parts, finish);
 				}
               	function finish() {
-                  curline = '';
                   term.writeln('');
                   term.prompt();
                 }
