@@ -109,7 +109,7 @@
         }
         commands.cat.async = true;
         commands.cd = function(args, cb){
-          	var file = (args[0] === '..' ? file = cwd.split('/').slice(0,-1).join('/') : cwd + args[0]);
+          	var file = (args[0] === '..' ? file = cwd.split('/').slice(0,-2).join('/') : cwd + args[0]);
           	if (!file) {
               file = '/';
             }
