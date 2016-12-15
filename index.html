@@ -202,11 +202,11 @@
           	if (typeof res.data === 'object') {
               return Promise.all(res.data.map(function (v) {
                 return clone(repo, branch, v.path);
-              }).then(function () {
+              })).then(function () {
                 return new Promise(function (resolve, reject) {
                   commands.mkdir([path], function (err) {
                     if (err) {reject(err);}else{resolve()}
-                  })
+                  });
                 });
               });
             }
