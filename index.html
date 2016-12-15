@@ -147,7 +147,7 @@
         commands.rm.async = true;
         commands.rmdir = function(args, cb) {
           fs.rmdir(cwd + args[0], function (err) {
-            cb(err, color.green('Deleted!');
+            cb(err, color.green('Deleted!'));
           });
         };
         commands.rmdir.async = true;
