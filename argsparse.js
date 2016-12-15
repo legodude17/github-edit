@@ -1,4 +1,4 @@
-(function(){
+window.argsparse = (function(){
 return function (args, opts) {
     if (!opts) opts = {};
     
