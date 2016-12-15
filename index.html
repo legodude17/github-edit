@@ -133,11 +133,23 @@
         }
         commands.mkdir.async = true;
         commands.rt = function(args, cb) {
-          fs.writeFile(args[0], args[1], function (err) {
+          fs.writeFile(cwd + args[0], args[1], function (err) {
             cb(err, color.green('Written with') + ': ' + args[1]);
           });
         }
         commands.rt.async = true;
+        commands.rm = function(args, cb) {
+          fs.unlink(cwd + args[0], function (err) {
+            cb(err, color.green('Deleted!'));
+          });
+        };
+        commands.rm.async = true;
+        commands.rmdir = function(args, cb) {
+          fs.rmdir(cwd + args[0], function (err) {
+            cb(err, color.green('Deleted!');
+          });
+        };
+        commands.rmdir.async = true;
       </script>
     </body>
   </html>
