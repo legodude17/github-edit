@@ -23,11 +23,32 @@
         }
         var colors = ["white", "black", "blue", "cyan", "green", "magenta", "red", "yellow", "bgWhite", "bgBlack", "bgBlue", "bgCyan", "bgGreen", "bgMagenta", "bgRed", "bgYellow", "grey", "brightBlack", "brightRed", "brightGreen", "brightYellow", "brightBlue", "brightMagenta", "brightCyan", "brightWhite", "bgGrey", "bgBrightBlack", "bgBrightRed", "bgBrightGreen", "bgBrightYellow", "bgBrightBlue", "bgBrightMagenta", "bgBrightCyan", "bgBrightWhite"];
         var color = {};
-        
+        var currentCmd = null;
         colors.forEach(function (col) {
           color[col] = c.bind(null, col);
         });
-
+		function runCmd(cmd, args) {
+          currentCmd = {cmd, args};
+          function handle(err, res) {
+                          if (err) {
+                            term.write(ansi.color('red') + "Error" + ansi.color('reset') + ": " + err.message || err);
+                          } else {
+                            term.write(res);
+                          }
+            currentCmd = null;
+                    }
+                  	if (!commands[cmd]) {
+                      term.write(ansi.color('red') + "Command not recognized" + ansi.color('reset') + ": " + cmd);
+                    } else {
+                      if (commands[cmd].async) {
+                        commands[cmd](result.parts, handle);
+                      } else {
+                        var err, res;
+                        try {res = commands[cmd](result.parts);} catch(e){err = e}
+                        handle(err, res);
+                      }
+                    }
+        }
   		term.prompt = function () {
     		term.write('\r\n' + color.green('guest') + '@' + color.yellow(cwd)+ ' $  ');
   		};
@@ -44,6 +65,12 @@
 
     		if (ev.keyCode == 13) {
   				term.writeln('');
+                if (currentCmd) {
+                  if (currentCmd.enter) {
+                    currentCmd.enter(curline);
+                  }
+                  return;
+                }
               	var parser = new SnailEscape();
 				var result = parser.parse(curline);
                 console.log(curline);
@@ -51,34 +78,19 @@
   					term.write(ansi.color('red') + "Could not parse input" + ansi.color('reset') + ": ", result.error);
 				} else {
  					var cmd = result.parts.shift();
-                  	function handle(err, res) {
-                          if (err) {
-                            term.write(ansi.color('red') + "Error" + ansi.color('reset') + ": " + err.message || err);
-                          } else {
-                            term.write(res);
-                          }
-                    }
-                  	if (!commands[cmd]) {
-                      term.write(ansi.color('red') + "Command not recognized" + ansi.color('reset') + ": " + cmd);
-                    } else {
-                      if (commands[cmd].async) {
-                        commands[cmd](result.parts, handle);
-                      } else {
-                        var err, res;
-                        try {res = commands[cmd](result.parts);} catch(e){err = e}
-                        handle(err, res);
-                      }
-                    }
+                  	runCmd(cmd, result.parts);
 				}
                 curline = '';
     		 	term.prompt();
     		} else if (ev.keyCode == 8) {
-    		  if (term.x > 11) {
+    		  if (term.x > 10 + cwd.length) {
                 curline = curline.slice(0, -1);
     		    term.write('\b \b');
     		  }
     		} else if (printable) {
-    		  term.write(key);
+              if (!(currentCmd && currentCmd.doNotEcho)) {
+    		    term.write(key);
+              }
               curline += key;
     		}
   		});
@@ -86,15 +98,16 @@
   		term.on('paste', function (data, ev) {
   		  term.write(data);
   		});
-        var fs = (function(){
+        var node = (function(){
         var obj = {};
   		BrowserFS.install(obj);
   		// Constructs an instance of the LocalStorage-backed file system. 
   		var lsfs = new BrowserFS.FileSystem.LocalStorage();
   		// Initialize it as the root file system. 
  		BrowserFS.initialize(lsfs);
-        return obj.require('fs');
+        return {fs:obj.require('fs'), process: obj.process, Buffer: obj.Buffer};
         })();
+        var fs = node.fs;
         commands.ls = function(args, cb){
           fs.readdir(cwd,function(err, res){
             cb(err, res && res.join('\r\n'));
@@ -150,7 +163,26 @@
             cb(err, color.green('Deleted!'));
           });
         };
+        var gh = null;
         commands.rmdir.async = true;
+        commands.git = function(args, cb) {
+          if (!gh) {
+            var username, password;
+            term.write('Enter your github username: ');
+            currentCmd.enter = function (line) {
+              username = line;
+              term.write('Enter your password: ');
+              currentCmd.enter = function (line) {
+                password = line;
+                gh = new GitHub({username, password});
+                parse(commands.git, args, cb);
+              }
+            }
+          }
+        }
+        function parse(cmd, args, cb) {
+          cb(err, JSON.stringify(gh));
+        }
       </script>
     </body>
   </html>
