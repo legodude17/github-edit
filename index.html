@@ -172,7 +172,9 @@
             currentCmd.enter = function (line) {
               username = line;
               term.write('Enter your password: ');
+              currentCmd.doNotEcho = true;
               currentCmd.enter = function (line) {
+                currentCmd.doNotEcho = false;
                 password = line;
                 gh = new GitHub({username, password});
                 parse(commands.git, args, cb);
