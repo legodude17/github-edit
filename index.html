@@ -207,7 +207,7 @@
               }).then(function (path) {
                 return Promise.all(res.data.map(function (v) {
                   return clone(repo, branch, path + '/' + v.path);
-                });
+                }));
               });
             }
             return new Promise(function (resolve, reject) {
