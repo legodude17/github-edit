@@ -190,7 +190,13 @@
         }
         commands.git.async = true;
         function parse(cmd, args, cb) {
-          cb(null, color.green('Authed'));
+          if (args.length === 0) {
+            cb(null, color.green('Authed'));
+          } else if (cmd[args[0]]){
+            cmd[args.shift()](argsparse(args), cb);
+          } else {
+            cb("Unknown subcommands: " + args[0]);
+          }
         }
         commands.git.clone = function (args, cb) {
           var repo = gh.getRepo(args._[0].split('/')[0],args._[0].split('/')[1]);
