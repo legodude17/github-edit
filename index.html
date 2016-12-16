@@ -200,13 +200,13 @@
         function clone(repo, branch, path, name) {
           return repo.getContents(branch, path, true).then(function(res){
           	if (typeof res.data === 'object') {
-              return Promise.all(res.data.map(function (v) {
-                return clone(repo, branch, v.path);
-              })).then(function () {
-                return new Promise(function (resolve, reject) {
-                  commands.mkdir([path === '.' ? name : path], function (err) {
-                    if (err) {reject(err);}else{resolve()}
-                  });
+              return new Promise(function (resolve, reject) {
+                commands.mkdir([path === '.' ? name : path], function (err) {
+                  if (err) {reject(err);}else{resolve(path === '.' ? name : path)}
+                });
+              }).then(function (path) {
+                return Promise.all(res.data.map(function (v) {
+                  return clone(repo, branch, path + '/' + v.path);
                 });
               });
             }
