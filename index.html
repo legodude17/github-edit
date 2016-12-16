@@ -204,14 +204,14 @@
                 commands.mkdir([path === '.' ? name : path], function (err) {
                   if (err) {reject(err);}else{resolve()}
                 });
-              }).then(function (path) {
+              }).then(function () {
                 return Promise.all(res.data.map(function (v) {
-                  return clone(repo, branch, v.path);
+                  return clone(repo, branch, v.path, name);
                 }));
               });
             }
             return new Promise(function (resolve, reject) {
-              commands.rt([path, res.data], function (err) {
+              commands.rt([name + path, res.data], function (err) {
                 if (err) {reject(err);}else{resolve()}
               });
             });
