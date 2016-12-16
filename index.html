@@ -183,7 +183,7 @@
                 currentCmd.doNotEcho = false;
                 password = line;
                 gh = new GitHub({username, password});
-                parse(commands.git, args, cb);
+                parse(commands.git, argsparse(args), cb);
               }
             }
           }
