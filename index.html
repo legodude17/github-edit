@@ -76,7 +76,6 @@
                 }
               	var parser = new SnailEscape();
 				var result = parser.parse(curline);
-                console.log(curline);
                 curline = '';
 				if(result.error) {
   					term.write(ansi.color('red') + "Could not parse input" + ansi.color('reset') + ": ", result.error);
@@ -86,7 +85,7 @@
                   	runCmd(cmd, result.parts, finish);
 				}
               	function finish() {
-                  term.writeln('');
+                 // term.writeln('');
                   term.prompt();
                 }
     		} else if (ev.keyCode == 8) {
