@@ -195,16 +195,16 @@
         commands.git.clone = function (args, cb) {
           var repo = gh.getRepo(args._[0].split('/')[0],args._[0].split('/')[1]);
           var branch = args._[1] || 'master';
-          clone(repo, branch, '.').then(function (res){cb(null, res);},cb);
+          clone(repo, branch, '.', args._[0].split('/')[1]).then(function (res){cb(null, res);},cb);
         }
-        function clone(repo, branch, path) {
+        function clone(repo, branch, path, name) {
           return repo.getContents(branch, path, true).then(function(res){
           	if (typeof res.data === 'object') {
               return Promise.all(res.data.map(function (v) {
                 return clone(repo, branch, v.path);
               })).then(function () {
                 return new Promise(function (resolve, reject) {
-                  commands.mkdir([path], function (err) {
+                  commands.mkdir([path === '.' ? name : path], function (err) {
                     if (err) {reject(err);}else{resolve()}
                   });
                 });
