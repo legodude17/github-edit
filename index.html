@@ -211,6 +211,8 @@
                 parse(commands.git, argsparse(args), cb);
               }
             }
+          } else {
+            parse(commands.git, argsparse(args), cb);
           }
         }
         commands.git.async = true;
