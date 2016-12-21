@@ -169,6 +169,31 @@
             cb(err, color.green('Deleted!'));
           });
         };
+        commands.rimraf = function(args, cb_) {
+          var amount = 0;
+          function cb(err) {
+            if (amount === 0) {
+              cb_(err);
+            } else {
+              amount--;
+            }
+          }
+          fs.readdir(cwd + args[0], function(err, data) {
+            if(err)return cb_(err);
+            data.forEach(function (v){
+              amount++;
+              fs.stat(cwd + args[0] + v, function (err, stat) {
+                if (err)return cb(err);
+                if (stat.isFile()) {
+                  commands.rm([args[0] + v], cb);
+                } else {
+                  commands.rimraf([args[0] + v], cb);
+                }
+              });
+            });
+          });
+        }
+        commands.rimraf.async = true;
         var gh = null;
         commands.rmdir.async = true;
         commands.git = function(args, cb) {
@@ -223,6 +248,7 @@
             });
           })
         }
+        
       </script>
     </body>
   </html>
